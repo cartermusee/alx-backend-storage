@@ -9,4 +9,3 @@ SELECT band_name,
 FROM metal_bands
 WHERE style = 'Glam rock'
 ORDER BY lifespan DESC;
-
