@@ -41,15 +41,15 @@ def call_history(method: Callable) -> Callable:
 def replay(method: Callable) -> None:
     """history of func
     Keyword arguments:
-    method: callables
+        method: callables
     Return: none
     """
     name = method.__qualname__
     cache = redis.Redis()
     call = cache.get(name).decode("utf-8")
     print("{} was called {} times".format(name, call))
-    inputs = cache.lrange(name + "inputs", 0, -1)
-    outputs = cache.lrange(name + "outputs", 0, -1)
+    inputs = cache.lrange(name + ":inputs", 0, -1)
+    outputs = cache.lrange(name + ":outputs", 0, -1)
     for i, j in zip(inputs, outputs):
         print("{}(*{}) -> {}".format(name, i.decode("utf-8"),
                                      j.decode("utf-8")))
