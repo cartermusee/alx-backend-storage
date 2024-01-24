@@ -42,7 +42,7 @@ def replay(method: Callable) -> None:
     """history of func
     Keyword arguments:
         method: callables
-    Return: none
+    Returns: none
     """
     name = method.__qualname__
     cache = redis.Redis()
@@ -68,8 +68,8 @@ class Cache():
         self._redis.set(key, data)
         return key
 
-    def  get(self, key: str,
-             fn: Optional[Callable] = None) -> Union[str, int, bytes, float, None]:
+    def get(self, key: str,
+            fn: Optional[Callable] = None) -> Union[str, int, bytes, float]:
         data = self._redis.get(key)
 
         if data is None:
