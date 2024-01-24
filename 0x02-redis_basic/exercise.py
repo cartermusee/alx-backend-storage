@@ -18,6 +18,7 @@ def count_calls(method: Callable) -> Callable:
         return method(self, *args, **kwds)
     return wrapper
 
+
 def call_history(method: Callable) -> Callable:
     """call all history function
     Keyword arguments:
@@ -27,6 +28,7 @@ def call_history(method: Callable) -> Callable:
     key = method.__qualname__
     inputs = key + ":inputs"
     outputs = key + ":outputs"
+
     @wraps(method)
     def wrapper(self, *args, **kwargs):
         self._redis.rpush(inputs, str(args))
@@ -34,6 +36,7 @@ def call_history(method: Callable) -> Callable:
         self._redis.rpush(outputs, str(data))
         return data
     return wrapper
+
 
 def replay(method: Callable) -> None:
     """history of func
@@ -48,31 +51,40 @@ def replay(method: Callable) -> None:
     inputs = cache.lrange(name + "inputs", 0, -1)
     outputs = cache.lrange(name + "outputs", 0, -1)
     for i, j in zip(inputs, outputs):
-        print("{}(*{}) -> {}".format(name, i.decode("utf-8"), j.decode("utf-8")))
+        print("{}(*{}) -> {}".format(name, i.decode("utf-8"),
+                                     j.decode("utf-8")))
 
 
 class Cache():
     """class for cache"""
+
     def __init__(self) -> None:
         self._redis = redis.Redis()
         self._redis.flushdb()
-    
+
     @count_calls
+    @call_history
     def store(self, data: Union[str, int, bytes, float]) -> str:
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
 
-    def  get(self, key: str, fn: Optional[Callable] = None) -> Union[str, int, bytes, float, None]:
+    def get(self,
+            key: str,
+            fn: Optional[Callable] = None) -> Union[str,
+                                                    int,
+                                                    bytes,
+                                                    float,
+                                                    None]:
         data = self._redis.get(key)
 
         if data is None:
             return None
         if fn is not None:
             return fn(data)
-        
+
         return data
-    
+
     def get_str(self, key: str) -> str:
         """chenge to string
         Keyword arguments:
