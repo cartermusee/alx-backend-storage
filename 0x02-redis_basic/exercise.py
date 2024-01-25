@@ -47,7 +47,7 @@ def replay(method: Callable) -> None:
     name = method.__qualname__
     cache = redis.Redis()
     call = cache.get(name).decode("utf-8")
-    print("{} was called {} times".format(name, call))
+    print("{} was called {} times:".format(name, call))
     inputs = cache.lrange(name + ":inputs", 0, -1)
     outputs = cache.lrange(name + ":outputs", 0, -1)
     for i, o in zip(inputs, outputs):
@@ -64,12 +64,23 @@ class Cache():
     @count_calls
     @call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
+        """function store
+        Keyword arguments:
+            data: what is being recieved
+        Return: srting
+        """        
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
 
     def get(self, key: str,
             fn: Optional[Callable] = None) -> Union[str, int, bytes, float]:
+        """get to get a str
+        Keyword arguments:
+            key: the get to get
+            fn: callable function
+        Return: union
+        """
         data = self._redis.get(key)
 
         if data is None:
