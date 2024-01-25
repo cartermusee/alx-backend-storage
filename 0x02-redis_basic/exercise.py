@@ -68,7 +68,7 @@ class Cache():
         Keyword arguments:
             data: what is being recieved
         Return: srting
-        """        
+        """
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
